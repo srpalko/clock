@@ -10,6 +10,7 @@ import {
   selectSessionLegnth,
   selectBreakLegnth,
   selectTimer,
+  stop,
 } from './clockSlice';
 import styles from './Counter.module.css';
 
@@ -66,6 +67,9 @@ export function Clock() {
           onClick={() => dispatch(reset())}
           >
           Reset
+        </button>
+        <button className={styles.button} onClick={() => stop()}>
+          Stop
         </button>
        <h1>{timer}</h1>
       </div>
