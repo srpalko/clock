@@ -1,3 +1,6 @@
+/* This is the main clock component of the app. 
+It includes both the session and break setting controls and the countdown timer itself. */
+
 import React, { useState } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
 import {
@@ -9,7 +12,7 @@ import {
   countdown,
   selectSessionLegnth,
   selectBreakLegnth,
-  selectTimer,
+  selectDisplay,
   stop,
 } from './clockSlice';
 import styles from './Counter.module.css';
@@ -17,8 +20,11 @@ import styles from './Counter.module.css';
 export function Clock() {
   const sessionL = useSelector(selectSessionLegnth);
   const breakL = useSelector(selectBreakLegnth);
-  const timer = useSelector(selectTimer);
+  const timer = useSelector(selectDisplay);
   const dispatch = useDispatch();
+
+  // The timer needs to be set to whatever the session legnth ends up at before it starts its countdown.
+  //dispatch(setTimer(timer));
 
   return (
     <div>
@@ -58,7 +64,7 @@ export function Clock() {
       </div>
         <button
           className={styles.asyncButton}
-          onClick={() => dispatch(countdown() || 0)}
+          onClick={() => dispatch(countdown())}
         >
           Start
         </button>
@@ -71,7 +77,7 @@ export function Clock() {
         <button className={styles.button} onClick={() => stop()}>
           Stop
         </button>
-       <h1>{timer}</h1>
+       <h1 className={styles.value}>{timer}</h1>
       </div>
     
   )}
