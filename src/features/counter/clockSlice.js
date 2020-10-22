@@ -49,7 +49,7 @@ export const clockSlice = createSlice({
         }
       } else if (state.currentInterval === 'break') {
         state.timer -= 1;
-        state.display = 'Take a break!  ' + timeFormatter(state.timer);
+        state.display = `Take a break!  ${timeFormatter(state.timer)}`;
         if (state.timer === 0) {
           state.currentInterval = 'session';
           state.timer = state.sessionLegnth * 60;
