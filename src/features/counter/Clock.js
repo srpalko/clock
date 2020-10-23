@@ -13,7 +13,10 @@ import {
   selectSessionLegnth,
   selectBreakLegnth,
   selectDisplay,
-  stop,
+  selectRunning,
+  selectStarted,
+  stopTimer,
+  restart,
 } from './clockSlice';
 import styles from './Counter.module.css';
 
@@ -21,6 +24,8 @@ export function Clock() {
   const sessionL = useSelector(selectSessionLegnth);
   const breakL = useSelector(selectBreakLegnth);
   const timer = useSelector(selectDisplay);
+  const running = useSelector(selectRunning);
+  const started = useSelector(selectStarted);
   const dispatch = useDispatch();
 
   // The timer needs to be set to whatever the session legnth ends up at before it starts its countdown.
@@ -63,8 +68,8 @@ export function Clock() {
         </button>
       </div>
         <button
-          className={styles.asyncButton}
-          onClick={() => dispatch(countdown())}
+          className={styles.button}
+          onClick={() => { if (!running && !started) { dispatch(countdown()) } else { dispatch(restart()) } }}
         >
           Start
         </button>
@@ -74,7 +79,7 @@ export function Clock() {
           >
           Reset
         </button>
-        <button className={styles.button} onClick={() => stop()}>
+        <button className={styles.button} onClick={ () => dispatch(stopTimer()) }>
           Stop
         </button>
        <h1 className={styles.value}>{timer}</h1>
