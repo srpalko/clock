@@ -8,8 +8,8 @@ const defaultTimes = {session: 25, break: 5};
 export const clockSlice = createSlice({
   name: 'clock',
   initialState: {
-    sessionLegnth: defaultTimes.session,
-    breakLegnth: defaultTimes.break,
+    sessionLength: defaultTimes.session,
+    breakLength: defaultTimes.break,
     currentInterval: 'session',
     timer: 0,
     display: timeFormatter(defaultTimes.session * 60),
@@ -17,33 +17,34 @@ export const clockSlice = createSlice({
     started: false,
     setIntervalRunning: false,
     reset: false,
+    alarmPlaying: false,
   },
   reducers: {
     incrementSession: state => {
-      if (state.sessionLegnth < 60) {
-        state.sessionLegnth += 1;
-        state.display = timeFormatter(state.sessionLegnth * 60);
+      if (state.sessionLength < 60) {
+        state.sessionLength += 1;
+        state.display = timeFormatter(state.sessionLength * 60);
       }  
     },
     decrementSession: state => {
-      if (state.sessionLegnth > 1) {
-        state.sessionLegnth -= 1;
-        state.display = timeFormatter(state.sessionLegnth * 60);
+      if (state.sessionLength > 1) {
+        state.sessionLength -= 1;
+        state.display = timeFormatter(state.sessionLength * 60);
       }
     },
     incrementBreak: state => {
-      if (state.breakLegnth < 60) {
-        state.breakLegnth += 1;
+      if (state.breakLength < 60) {
+        state.breakLength += 1;
       }
     },
     decrementBreak: state => {
-      if (state.breakLegnth > 1) {
-        state.breakLegnth -= 1;
+      if (state.breakLength > 1) {
+        state.breakLength -= 1;
       }
     },
     reset: state => {
-      state.sessionLegnth = defaultTimes.session;
-      state.breakLegnth = defaultTimes.break;
+      state.sessionLength = defaultTimes.session;
+      state.breakLength = defaultTimes.break;
       state.currentInterval = 'session';
       state.timer = 0;
       state.display = timeFormatter(defaultTimes.session * 60);
@@ -51,17 +52,20 @@ export const clockSlice = createSlice({
       state.reset = true;
     },
     startTimer: state => {
-      state.timer = state.sessionLegnth * 60;
+      state.timer = state.sessionLength * 60;
       state.running = true;
       state.started = true;
       state.setIntervalRunning = true;
     },
     restart: state => {
       if (state.reset === true) {
-        state.timer = state.sessionLegnth * 60;
+        state.alarmPlaying = false;
+        state.timer = state.sessionLength * 60;
         state.running = true;
+        state.reset = false;
       } else {
-      state.running = true;
+        state.alarmPlaying = false;
+        state.running = true;
       }
     },
     runTimer: state => {
@@ -70,34 +74,56 @@ export const clockSlice = createSlice({
           state.timer -= 1;
           state.display = timeFormatter(state.timer);
           if (state.timer === 0) {
-            state.currentInterval = 'break';
-            state.timer = state.breakLegnth * 60;
+            state.running = false;
+            state.alarmPlaying = true;
+            state.currentInterval = 'break'
           }
         } else if (state.currentInterval === 'break') {
           state.timer -= 1;
           state.display = timeFormatter(state.timer);
           if (state.timer === 0) {
-            state.currentInterval = 'session';
-            state.timer = state.sessionLegnth * 60;
+            state.running = false;
+            state.alarmPlaying = true;
+            state.currentInterval = 'session'
           }
         }
       }
     },
     stopTimer: state => {
       state.running = false;
-    }
-  },
+    },
+    setNextInterval: state => {
+      if (state.currentInterval === 'session') {
+        state.alarmPlaying = false;
+        state.timer = state.breakLength * 60;
+        state.display = timeFormatter(state.timer);
+        //state.currentInterval = 'break';
+        state.running = true
+      } else {
+        state.alarmPlaying = false;
+        state.timer = state.sessionLength * 60;
+        state.display = timeFormatter(state.timer);
+        //state.currentInterval = 'session';
+        state.running = true;
+      }
+    },
+  }
 });
 
 
 
-export const { incrementSession, decrementSession, incrementBreak, decrementBreak, reset, runTimer, startTimer, stopTimer, restart } = clockSlice.actions;
+export const { incrementSession, decrementSession, incrementBreak, 
+              decrementBreak, reset, runTimer, startTimer, stopTimer,
+               restart, playAlarm, setNextInterval } = clockSlice.actions;
 
 
 
 function timeFormatter(timeInSeconds) {
   //converts total seconds to minutes + seconds for display.
-  const minutes = Math.floor(timeInSeconds / 60);
+  let minutes = Math.floor(timeInSeconds / 60);
+  if (minutes < 10) {
+    minutes = '0' + minutes.toString();
+  }
   let seconds = timeInSeconds - minutes * 60;
   if (seconds < 10) {
     seconds = '0' + seconds.toString();
@@ -114,21 +140,31 @@ function timeFormatter(timeInSeconds) {
 export const countdown = () => dispatch => {
     dispatch(startTimer());
     setInterval(() => {
-      dispatch(runTimer());
+      dispatch(runTimer()); 
     }, 1000);
 };
 
+export const zeroAlarm = () => dispatch => {
+  //dispatch(stopTimer());
+  //dispatch(setNextInterval());
+  setTimeout(() => {
+    dispatch(setNextInterval());
+    dispatch(restart());
+  }, 5000);
+}
 
 // The function below is called a selector and allows us to select a value from
 // the state. Selectors can also be defined inline where they're used instead of
 // in the slice file. For example: `useSelector((state) => state.counter.value)`
 //export const selectCount = state => state.counter.value;
-export const selectSessionLegnth = state => state.clock.sessionLegnth;
-export const selectBreakLegnth = state => state.clock.breakLegnth;
+export const selectSessionLength = state => state.clock.sessionLength;
+export const selectBreakLength = state => state.clock.breakLength;
 export const selectDisplay = state => state.clock.display;
 export const selectRunning = state => state.clock.running;
 export const selectStarted = state => state.clock.started;
 export const selectSetIntervalRunning = state => state.clock.setIntervalRunning;
 export const selectCurrentInterval = state => state.clock.currentInterval;
+export const selectAlarmPlaying = state => state.clock.alarmPlaying;
+export const selectReset = state => state.clock.reset;
 
 export default clockSlice.reducer;

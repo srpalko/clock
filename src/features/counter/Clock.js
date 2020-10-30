@@ -11,38 +11,57 @@ import {
   decrementBreak,
   reset,
   countdown,
-  selectSessionLegnth,
-  selectBreakLegnth,
+  zeroAlarm,
+  selectSessionLength,
+  selectBreakLength,
   selectDisplay,
   selectRunning,
   selectStarted,
   selectCurrentInterval,
+  selectAlarmPlaying,
+  selectReset,
   stopTimer,
   restart,
   startTimer,
+  setNextInterval,
 } from './clockSlice';
 import styles from './Counter.module.css';
+import alarm from './short_alarm.mp3';
 
 
 
 export function Clock() {
-  const sessionL = useSelector(selectSessionLegnth);
-  const breakL = useSelector(selectBreakLegnth);
+  const sessionL = useSelector(selectSessionLength);
+  const breakL = useSelector(selectBreakLength);
   const timer = useSelector(selectDisplay);
   const running = useSelector(selectRunning);
   const started = useSelector(selectStarted);
   const currentInterval = useSelector(selectCurrentInterval);
+  const alarmPlaying = useSelector(selectAlarmPlaying);
+  const isReset = useSelector(selectReset);
+
   const dispatch = useDispatch();
 
-  // The timer needs to be set to whatever the session legnth ends up at before it starts its countdown
-
   const currentIntervalDisplay = currentInterval === "session" ? "Session" : "Break";
+
+  let audio = document.getElementById("beep");
   
+
+  if (alarmPlaying === true) {
+    dispatch(zeroAlarm());
+    audio.play();
+    //dispatch(setNextInterval());
+  }
+
+  if (isReset === true) {
+    audio.pause();
+    audio.currentTime = 0;
+  }
 
   return (
     <div>
       <div id="session-controls" className={styles.row}>
-        <h2 id="session-label">Session Legnth</h2>
+        <h2 id="session-label">Session Length</h2>
         <button
           id="session-increment"
           className={styles.button}
@@ -51,7 +70,7 @@ export function Clock() {
         >
           +
         </button>
-        <span className={styles.value} id="session-legnth">{sessionL}</span>
+        <span className={styles.value} id="session-length">{sessionL}</span>
         <button
           id="session-decrement"
           className={styles.button}
@@ -62,7 +81,7 @@ export function Clock() {
         </button>
       </div>
       <div id="break-controls" className={styles.row}>
-        <h2 id="break-label">Break Legnth</h2>
+        <h2 id="break-label">Break Length</h2>
         <button
           id="break-increment"
           className={styles.button}
@@ -71,7 +90,7 @@ export function Clock() {
         >
           +
         </button>
-        <span className={styles.value} id="break-legnth">{breakL}</span>
+        <span className={styles.value} id="break-length">{breakL}</span>
         <button
           id="break-decrement"
           className={styles.button}
@@ -102,11 +121,9 @@ export function Clock() {
           >
           Reset
         </button>
-        {/*<button className={styles.button} onClick={ () => dispatch(stopTimer()) }>
-          Stop
-          </button> */}
        <h1 id="timer-label" className={styles.value}>{currentIntervalDisplay}</h1>
        <h1 className={styles.value} id="time-left" >{timer}</h1>
+       <audio id="beep" src={alarm} controls/>
        <ReactFCCtest />
       </div>
     
