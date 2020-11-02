@@ -24,6 +24,7 @@ import {
   restart,
   startTimer,
   setNextInterval,
+  nextStart,
 } from './clockSlice';
 import styles from './Counter.module.css';
 import alarm from './short_alarm.mp3';
@@ -45,18 +46,32 @@ export function Clock() {
   const currentIntervalDisplay = currentInterval === "session" ? "Session" : "Break";
 
   let audio = document.getElementById("beep");
+
+  function audioToggle(command, audio) {
+    if (command === 'play') {
+      audio.currentTime = 0;
+      audio.play();
+    } else if (command === 'stop') {
+      audio.pause();
+      audio.currentTime = 0;
+    } else if (command === 'reset') {
+      audio.currentTime = 0;
+      } else {
+        console.log("Audio toggle error!");
+      }
+  }
   
 
   if (alarmPlaying === true) {
     dispatch(zeroAlarm());
-    audio.play();
-    //dispatch(setNextInterval());
+    audioToggle('play', audio);
+  } else if (alarmPlaying && isReset) {
+    audioToggle('stop', audio);
+  } else if (isReset) {
+    audioToggle('reset', audio);
   }
 
-  if (isReset === true) {
-    audio.pause();
-    audio.currentTime = 0;
-  }
+  
 
   return (
     <div>
@@ -105,7 +120,10 @@ export function Clock() {
           className={styles.button}
           onClick={() => { if (!running && !started) { 
                             dispatch(countdown()) 
-                          } else if (running) {
+                          } else if (!running && started) {
+                            dispatch(nextStart());
+                          } 
+                          else if (running) {
                             dispatch(stopTimer())
                           }
                           else { 
@@ -123,7 +141,7 @@ export function Clock() {
         </button>
        <h1 id="timer-label" className={styles.value}>{currentIntervalDisplay}</h1>
        <h1 className={styles.value} id="time-left" >{timer}</h1>
-       <audio id="beep" src={alarm} controls/>
+       <audio id="beep" src={alarm} controls preload="auto"/>
        <ReactFCCtest />
       </div>
     

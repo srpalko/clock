@@ -43,30 +43,32 @@ export const clockSlice = createSlice({
       }
     },
     reset: state => {
+      state.reset = true;
       state.sessionLength = defaultTimes.session;
       state.breakLength = defaultTimes.break;
       state.currentInterval = 'session';
       state.timer = 0;
       state.display = timeFormatter(defaultTimes.session * 60);
       state.running = false;
-      state.reset = true;
+     // state.alarmPlaying = false;
     },
     startTimer: state => {
       state.timer = state.sessionLength * 60;
       state.running = true;
       state.started = true;
-      state.setIntervalRunning = true;
+      //state.setIntervalRunning = true;
+      //state.reset = false;
+    },
+    nextStart: state => {
+      state.alarmPlaying = false;
+      state.timer = state.sessionLength * 60;
+      state.running = true;
+      state.reset = false;
     },
     restart: state => {
-      if (state.reset === true) {
-        state.alarmPlaying = false;
-        state.timer = state.sessionLength * 60;
-        state.running = true;
-        state.reset = false;
-      } else {
-        state.alarmPlaying = false;
-        state.running = true;
-      }
+      state.alarmPlaying = false;
+      state.running = true;
+      state.reset = false;
     },
     runTimer: state => {
       if (state.running === true) {
@@ -93,19 +95,23 @@ export const clockSlice = createSlice({
       state.running = false;
     },
     setNextInterval: state => {
-      if (state.currentInterval === 'session') {
-        state.alarmPlaying = false;
-        state.timer = state.breakLength * 60;
-        state.display = timeFormatter(state.timer);
-        //state.currentInterval = 'break';
-        state.running = true
-      } else {
-        state.alarmPlaying = false;
-        state.timer = state.sessionLength * 60;
-        state.display = timeFormatter(state.timer);
-        //state.currentInterval = 'session';
-        state.running = true;
-      }
+      //if (!state.reset) {
+        if (state.currentInterval === 'break') {
+          //state.alarmPlaying = false;
+          state.timer = state.breakLength * 60;
+          state.display = timeFormatter(state.timer);
+         // state.reset = false;
+          //state.currentInterval = 'break';
+          //state.running = true
+        } else {
+          //state.alarmPlaying = false;
+          state.timer = state.sessionLength * 60;
+          state.display = timeFormatter(state.timer);
+          //state.reset = false;
+          //state.currentInterval = 'session';
+          //state.running = true;
+        }
+      //}
     },
   }
 });
@@ -114,7 +120,7 @@ export const clockSlice = createSlice({
 
 export const { incrementSession, decrementSession, incrementBreak, 
               decrementBreak, reset, runTimer, startTimer, stopTimer,
-               restart, playAlarm, setNextInterval } = clockSlice.actions;
+               restart, playAlarm, setNextInterval, nextStart } = clockSlice.actions;
 
 
 
@@ -145,11 +151,11 @@ export const countdown = () => dispatch => {
 };
 
 export const zeroAlarm = () => dispatch => {
-  //dispatch(stopTimer());
-  //dispatch(setNextInterval());
   setTimeout(() => {
     dispatch(setNextInterval());
-    dispatch(restart());
+  }, 500);
+  setTimeout(() => {
+    dispatch(restart()); 
   }, 5000);
 }
 
