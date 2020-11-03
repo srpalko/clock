@@ -15,9 +15,10 @@ export const clockSlice = createSlice({
     display: timeFormatter(defaultTimes.session * 60),
     running: false,
     started: false,
-    setIntervalRunning: false,
     reset: false,
     alarmPlaying: false,
+    alarmPosition: 0,
+    alarmStatus: '',
   },
   reducers: {
     incrementSession: state => {
@@ -43,32 +44,29 @@ export const clockSlice = createSlice({
       }
     },
     reset: state => {
+      state.alarmPlaying = false;
+      state.running = false;
       state.reset = true;
       state.sessionLength = defaultTimes.session;
       state.breakLength = defaultTimes.break;
       state.currentInterval = 'session';
       state.timer = 0;
       state.display = timeFormatter(defaultTimes.session * 60);
-      state.running = false;
-     // state.alarmPlaying = false;
+      state.alarmPosition = 0;
+      state.alarmStatus = 'stop';
     },
     startTimer: state => {
       state.timer = state.sessionLength * 60;
       state.running = true;
       state.started = true;
-      //state.setIntervalRunning = true;
-      //state.reset = false;
     },
     nextStart: state => {
-      state.alarmPlaying = false;
       state.timer = state.sessionLength * 60;
       state.running = true;
       state.reset = false;
     },
     restart: state => {
-      state.alarmPlaying = false;
-      state.running = true;
-      state.reset = false;
+      state.running = true; 
     },
     runTimer: state => {
       if (state.running === true) {
@@ -78,45 +76,39 @@ export const clockSlice = createSlice({
           if (state.timer === 0) {
             state.running = false;
             state.alarmPlaying = true;
-            state.currentInterval = 'break'
+            state.alarmStatus = 'play';
+            state.currentInterval = 'break';
           }
         } else if (state.currentInterval === 'break') {
-          state.timer -= 1;
-          state.display = timeFormatter(state.timer);
-          if (state.timer === 0) {
-            state.running = false;
-            state.alarmPlaying = true;
-            state.currentInterval = 'session'
-          }
+            state.timer -= 1;
+            state.display = timeFormatter(state.timer);
+            if (state.timer === 0) {
+              state.running = false;
+              state.alarmPlaying = true;
+              state.alarmStatus = 'play';
+              state.currentInterval = 'session';
+            }
         }
       }
     },
     stopTimer: state => {
       state.running = false;
+      state.alarmStatus = 'stop';
+      state.alarmPosition = 0;
     },
     setNextInterval: state => {
-      //if (!state.reset) {
+        state.alarmStatus = 'stop';
+        state.alarmPlaying = false;
         if (state.currentInterval === 'break') {
-          //state.alarmPlaying = false;
           state.timer = state.breakLength * 60;
           state.display = timeFormatter(state.timer);
-         // state.reset = false;
-          //state.currentInterval = 'break';
-          //state.running = true
         } else {
-          //state.alarmPlaying = false;
           state.timer = state.sessionLength * 60;
           state.display = timeFormatter(state.timer);
-          //state.reset = false;
-          //state.currentInterval = 'session';
-          //state.running = true;
         }
-      //}
     },
   }
 });
-
-
 
 export const { incrementSession, decrementSession, incrementBreak, 
               decrementBreak, reset, runTimer, startTimer, stopTimer,
@@ -153,9 +145,9 @@ export const countdown = () => dispatch => {
 export const zeroAlarm = () => dispatch => {
   setTimeout(() => {
     dispatch(setNextInterval());
-  }, 500);
+  }, 4000);
   setTimeout(() => {
-    dispatch(restart()); 
+    dispatch(restart());
   }, 5000);
 }
 
@@ -172,5 +164,7 @@ export const selectSetIntervalRunning = state => state.clock.setIntervalRunning;
 export const selectCurrentInterval = state => state.clock.currentInterval;
 export const selectAlarmPlaying = state => state.clock.alarmPlaying;
 export const selectReset = state => state.clock.reset;
+export const selectAlarmStatus = state => state.clock.alarmStatus;
+export const selectAlarmPosition = state => state.clock.alarmPosition;
 
 export default clockSlice.reducer;
