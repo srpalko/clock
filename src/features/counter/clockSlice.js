@@ -11,11 +11,11 @@ export const clockSlice = createSlice({
     sessionLength: defaultTimes.session,
     breakLength: defaultTimes.break,
     currentInterval: 'session',
-    timer: 0,
+    timer: defaultTimes.session,
     display: timeFormatter(defaultTimes.session * 60),
     running: false,
     started: false,
-    reset: false,
+    reset: true,
     alarmPlaying: false,
     alarmPosition: 0,
     alarmStatus: '',
@@ -44,39 +44,40 @@ export const clockSlice = createSlice({
       }
     },
     reset: state => {
+      state.alarmPosition = 0;
+      state.alarmStatus = 'stop';
       state.alarmPlaying = false;
       state.running = false;
       state.reset = true;
       state.sessionLength = defaultTimes.session;
       state.breakLength = defaultTimes.break;
       state.currentInterval = 'session';
-      state.timer = 0;
+      state.timer = defaultTimes.session;
       state.display = timeFormatter(defaultTimes.session * 60);
-      state.alarmPosition = 0;
-      state.alarmStatus = 'stop';
+      
     },
     startTimer: state => {
       state.timer = state.sessionLength * 60;
       state.running = true;
-      state.started = true;
     },
     nextStart: state => {
+      state.reset = false;
       state.timer = state.sessionLength * 60;
       state.running = true;
-      state.reset = false;
     },
-    restart: state => {
+    startNextInterval: state => {
       state.running = true; 
+      state.alarmStatus = 'stop';
     },
     runTimer: state => {
-      if (state.running === true) {
+      if (state.running === true && state.reset === false) {
         if (state.currentInterval === 'session') {
           state.timer -= 1;
           state.display = timeFormatter(state.timer);
           if (state.timer === 0) {
+            state.alarmStatus = 'play';
             state.running = false;
             state.alarmPlaying = true;
-            state.alarmStatus = 'play';
             state.currentInterval = 'break';
           }
         } else if (state.currentInterval === 'break') {
@@ -93,11 +94,8 @@ export const clockSlice = createSlice({
     },
     stopTimer: state => {
       state.running = false;
-      state.alarmStatus = 'stop';
-      state.alarmPosition = 0;
     },
     setNextInterval: state => {
-        state.alarmStatus = 'stop';
         state.alarmPlaying = false;
         if (state.currentInterval === 'break') {
           state.timer = state.breakLength * 60;
@@ -107,12 +105,18 @@ export const clockSlice = createSlice({
           state.display = timeFormatter(state.timer);
         }
     },
+    setStart: state => {
+      state.started = true;
+    },
+    restart: state => {
+      state.running = true;
+    }
   }
 });
 
 export const { incrementSession, decrementSession, incrementBreak, 
               decrementBreak, reset, runTimer, startTimer, stopTimer,
-               restart, playAlarm, setNextInterval, nextStart } = clockSlice.actions;
+               startNextInterval, playAlarm, setNextInterval, nextStart, setStart, restart } = clockSlice.actions;
 
 
 
@@ -136,7 +140,6 @@ function timeFormatter(timeInSeconds) {
 
 //acts as the actual timer, changing the value in state.
 export const countdown = () => dispatch => {
-    dispatch(startTimer());
     setInterval(() => {
       dispatch(runTimer()); 
     }, 1000);
@@ -145,9 +148,9 @@ export const countdown = () => dispatch => {
 export const zeroAlarm = () => dispatch => {
   setTimeout(() => {
     dispatch(setNextInterval());
-  }, 4000);
+  }, 2000);
   setTimeout(() => {
-    dispatch(restart());
+    dispatch(startNextInterval());
   }, 5000);
 }
 
@@ -166,5 +169,6 @@ export const selectAlarmPlaying = state => state.clock.alarmPlaying;
 export const selectReset = state => state.clock.reset;
 export const selectAlarmStatus = state => state.clock.alarmStatus;
 export const selectAlarmPosition = state => state.clock.alarmPosition;
+export const selectTimer = state => state.clock.timer;
 
 export default clockSlice.reducer;

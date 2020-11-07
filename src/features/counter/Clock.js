@@ -1,7 +1,7 @@
 /* This is the main clock component of the app. 
 It includes both the session and break setting controls and the countdown timer itself. */
 
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import ReactFCCtest from 'react-fcctest';
 import { useSelector, useDispatch } from 'react-redux';
 import {
@@ -26,6 +26,8 @@ import {
   restart,
   nextStart,
   setNextInterval,
+  selectTimer,
+  setStart,
 } from './clockSlice';
 import styles from './Counter.module.css';
 import alarm from './short_alarm.mp3';
@@ -35,7 +37,7 @@ import alarm from './short_alarm.mp3';
 export function Clock() {
   const sessionL = useSelector(selectSessionLength);
   const breakL = useSelector(selectBreakLength);
-  const timer = useSelector(selectDisplay);
+  const timerDisplay = useSelector(selectDisplay);
   const running = useSelector(selectRunning);
   const started = useSelector(selectStarted);
   const currentInterval = useSelector(selectCurrentInterval);
@@ -43,6 +45,7 @@ export function Clock() {
   const isReset = useSelector(selectReset);
   const alarmPosition = useSelector(selectAlarmPosition);
   const alarmStatus = useSelector(selectAlarmStatus);
+  const timer = useSelector(selectTimer);
 
   const dispatch = useDispatch();
 
@@ -53,18 +56,24 @@ export function Clock() {
   if (alarmPlaying) {
     dispatch(zeroAlarm());
   }
-  
-  if (alarmStatus === 'play') {
-    audio.play();
-  }
 
-  if (alarmStatus === 'stop') {
-    audio.pause();
-    audio.currentTime = alarmPosition;
-  }
+  useEffect(() => {
+    if (!started) {
+      dispatch(setStart());
+      dispatch(countdown());
+    }
+    if ( timer === 0 ) {
+      audio.play();
+    }
+    if (alarmStatus === 'stop') {
+      audio.pause();
+      audio.currentTime = alarmPosition;
+    }
+  });
 
   return (
     <div>
+      <audio id="beep" src={alarm} type='audio/mpeg; codecs="mp3"' controls/>
       <h1 className={styles.heading} >SRP 25 + 5 Clock</h1>
       <div id="session-controls" className={styles.row}>
         <h2 id="session-label">Session Length</h2>
@@ -113,15 +122,13 @@ export function Clock() {
         <button
           id="start_stop"
           className={styles.button}
-          onClick={() => { if (!running && !started) { 
-                            dispatch(countdown()) 
-                          } else if ( isReset ) {
-                            dispatch(nextStart());
+          onClick={() => { if (isReset && !running) { 
+                            dispatch(nextStart()); 
                           } 
                           else if (running) {
                             dispatch(stopTimer())
                           }
-                          else if (!running) { 
+                          else if (!running && !alarmPlaying) { 
                             dispatch(restart()) 
                           } }}
         >
@@ -130,13 +137,18 @@ export function Clock() {
         <button
           id="reset"
           className={styles.button}
-          onClick={() => dispatch(reset())}
+          onClick={() => { if ( isReset && !running ) {
+            audio.pause();
+            audio.currentTime = 0;
+            dispatch(reset());
+          } else {
+            dispatch(reset());
+          }}}
           >
           Reset
         </button>
        <div id="timer-label" className={styles.value}>{currentIntervalDisplay}</div>
-       <div className={styles.value} id="time-left" >{timer}</div>
-       <audio id="beep" src={alarm}/>
+       <div className={styles.display} id="time-left" >{timerDisplay}</div>
        <ReactFCCtest />
       </div>
     
