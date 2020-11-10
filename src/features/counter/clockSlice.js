@@ -2,9 +2,10 @@
 import { createSlice } from '@reduxjs/toolkit';
 import { useSelector } from 'react-redux';
 
-const defaultTimes = {session: 25, break: 5};
+// provide a convenient way of setting defaults
+const defaultTimes = { session: 25, break: 5 };
 
-
+// create state and actions for the clock
 export const clockSlice = createSlice({
   name: 'clock',
   initialState: {
@@ -21,28 +22,30 @@ export const clockSlice = createSlice({
     alarmStatus: '',
   },
   reducers: {
+    // increment and decrement the session and break timers.
     incrementSession: state => {
-      if (state.sessionLength < 60) {
+      if (state.sessionLength < 60 && state.reset) {
         state.sessionLength += 1;
         state.display = timeFormatter(state.sessionLength * 60);
       }  
     },
     decrementSession: state => {
-      if (state.sessionLength > 1) {
+      if (state.sessionLength > 1 && state.reset) {
         state.sessionLength -= 1;
         state.display = timeFormatter(state.sessionLength * 60);
       }
     },
     incrementBreak: state => {
-      if (state.breakLength < 60) {
+      if (state.breakLength < 60 && state.reset) {
         state.breakLength += 1;
       }
     },
     decrementBreak: state => {
-      if (state.breakLength > 1) {
+      if (state.breakLength > 1 && state.reset) {
         state.breakLength -= 1;
       }
     },
+    // reset to default state
     reset: state => {
       state.alarmPosition = 0;
       state.alarmStatus = 'stop';
@@ -56,27 +59,32 @@ export const clockSlice = createSlice({
       state.display = timeFormatter(defaultTimes.session * 60);
       
     },
+    // extra reducer, not currently in use
     startTimer: state => {
       state.timer = state.sessionLength * 60;
       state.running = true;
     },
+    // starts timer after a reset
     nextStart: state => {
       state.reset = false;
       state.timer = state.sessionLength * 60;
       state.running = true;
     },
+    // starts timer after an interval has ended
     startNextInterval: state => {
       state.running = true; 
       state.alarmStatus = 'stop';
+      state.alarmPlaying = false;
     },
+    // called by countdown() at set intervals to run the clock
     runTimer: state => {
       if (state.running === true && state.reset === false) {
         if (state.currentInterval === 'session') {
           state.timer -= 1;
           state.display = timeFormatter(state.timer);
           if (state.timer === 0) {
-            state.alarmStatus = 'play';
             state.running = false;
+            state.alarmStatus = 'play';
             state.alarmPlaying = true;
             state.currentInterval = 'break';
           }
@@ -85,8 +93,8 @@ export const clockSlice = createSlice({
             state.display = timeFormatter(state.timer);
             if (state.timer === 0) {
               state.running = false;
-              state.alarmPlaying = true;
               state.alarmStatus = 'play';
+              state.alarmPlaying = true;
               state.currentInterval = 'session';
             }
         }
@@ -95,19 +103,21 @@ export const clockSlice = createSlice({
     stopTimer: state => {
       state.running = false;
     },
+    // set up the next interval
     setNextInterval: state => {
-        state.alarmPlaying = false;
         if (state.currentInterval === 'break') {
           state.timer = state.breakLength * 60;
           state.display = timeFormatter(state.timer);
-        } else {
+        } else if (state.currentInterval === 'session') {
           state.timer = state.sessionLength * 60;
           state.display = timeFormatter(state.timer);
         }
     },
+    // indicate that countdown is running
     setStart: state => {
       state.started = true;
     },
+    // start clock after pausing
     restart: state => {
       state.running = true;
     }
@@ -119,9 +129,8 @@ export const { incrementSession, decrementSession, incrementBreak,
                startNextInterval, playAlarm, setNextInterval, nextStart, setStart, restart } = clockSlice.actions;
 
 
-
+// Takes seconds as integer and returns '00:00' display as string
 function timeFormatter(timeInSeconds) {
-  //converts total seconds to minutes + seconds for display.
   let minutes = Math.floor(timeInSeconds / 60);
   if (minutes < 10) {
     minutes = '0' + minutes.toString();
@@ -138,20 +147,21 @@ function timeFormatter(timeInSeconds) {
 // will call the thunk with the `dispatch` function as the first argument. Async
 // code can then be executed and other actions can be dispatched
 
-//acts as the actual timer, changing the value in state.
+// Make timer run at regular interval (1 second)
 export const countdown = () => dispatch => {
     setInterval(() => {
       dispatch(runTimer()); 
-    }, 1000);
+    }, 100);
 };
 
-export const zeroAlarm = () => dispatch => {
+// Delay and then set up and start the next interval
+export const setUpNextInterval = () => dispatch => {
   setTimeout(() => {
     dispatch(setNextInterval());
-  }, 2000);
+  }, 500);
   setTimeout(() => {
     dispatch(startNextInterval());
-  }, 5000);
+  }, 3000);
 }
 
 // The function below is called a selector and allows us to select a value from
@@ -170,5 +180,5 @@ export const selectReset = state => state.clock.reset;
 export const selectAlarmStatus = state => state.clock.alarmStatus;
 export const selectAlarmPosition = state => state.clock.alarmPosition;
 export const selectTimer = state => state.clock.timer;
-
+// prepare reducer for the store
 export default clockSlice.reducer;

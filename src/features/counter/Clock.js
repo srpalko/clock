@@ -1,7 +1,7 @@
-/* This is the main clock component of the app. 
-It includes both the session and break setting controls and the countdown timer itself. */
+/* A component for the clock feature */
 
 import React, { useState, useEffect } from 'react';
+// add testing functionality for project
 import ReactFCCtest from 'react-fcctest';
 import { useSelector, useDispatch } from 'react-redux';
 import {
@@ -11,7 +11,7 @@ import {
   decrementBreak,
   reset,
   countdown,
-  zeroAlarm,
+  setUpNextInterval,
   selectSessionLength,
   selectBreakLength,
   selectDisplay,
@@ -26,15 +26,16 @@ import {
   restart,
   nextStart,
   setNextInterval,
-  selectTimer,
+  //selectTimer,
   setStart,
 } from './clockSlice';
 import styles from './Counter.module.css';
 import alarm from './short_alarm.mp3';
 
 
-
+// display the clock
 export function Clock() {
+  // simplify the syntax
   const sessionL = useSelector(selectSessionLength);
   const breakL = useSelector(selectBreakLength);
   const timerDisplay = useSelector(selectDisplay);
@@ -45,36 +46,51 @@ export function Clock() {
   const isReset = useSelector(selectReset);
   const alarmPosition = useSelector(selectAlarmPosition);
   const alarmStatus = useSelector(selectAlarmStatus);
-  const timer = useSelector(selectTimer);
-
+  //const timer = useSelector(selectTimer);
   const dispatch = useDispatch();
 
+  // set the diplay to show session time or break time depending on current interval
   const currentIntervalDisplay = currentInterval === "session" ? "Session" : "Break";
 
+  // create an audio variable to allow control
   let audio = document.getElementById("beep");
 
+  // when the alarm is playing, pause the timer and set up the next interval on a delay.
   if (alarmPlaying) {
-    dispatch(zeroAlarm());
+    dispatch(setUpNextInterval());
   }
 
   useEffect(() => {
+    // when page loads, start the internal clock.
     if (!started) {
       dispatch(setStart());
       dispatch(countdown());
     }
-    if ( timer === 0 ) {
+    // play alarm on cue.
+   /* if ( alarmStatus === 'play' ) {
       audio.play();
-    }
-    if (alarmStatus === 'stop') {
+    } */
+    // stop and reset alarm on cue.
+    /*if (alarmStatus === 'stop') {
+      audio.pause();
+      audio.currentTime = alarmPosition;
+    }*/
+  }, [started]);
+
+  useEffect(() => {
+    if (alarmStatus === 'play') {
+      audio.play();
+    } else if (alarmStatus === 'stop') {
       audio.pause();
       audio.currentTime = alarmPosition;
     }
-  });
+  }, [alarmStatus])
 
   return (
     <div>
-      <audio id="beep" src={alarm} type='audio/mpeg; codecs="mp3"' controls/>
+      {/* Page Title */}
       <h1 className={styles.heading} >SRP 25 + 5 Clock</h1>
+      {/* controls for adjusting interval times */}
       <div id="session-controls" className={styles.row}>
         <h2 id="session-label">Session Length</h2>
         <div className={styles.controls}>
@@ -119,6 +135,7 @@ export function Clock() {
           </button>
         </div>
       </div>
+        {/* Start Button */}
         <button
           id="start_stop"
           className={styles.button}
@@ -134,6 +151,7 @@ export function Clock() {
         >
           Start/Stop
         </button>
+        {/* Reset Button */}
         <button
           id="reset"
           className={styles.button}
@@ -147,9 +165,12 @@ export function Clock() {
           >
           Reset
         </button>
+        {/* Display for current interval and time remaining */}
        <div id="timer-label" className={styles.value}>{currentIntervalDisplay}</div>
        <div className={styles.display} id="time-left" >{timerDisplay}</div>
+       {/* provide and audio element for the alarm */}
+       <audio id="beep" src={alarm} type='audio/mpeg; codecs="mp3"' controls/>
+       {/* FCC Test Suite */}
        <ReactFCCtest />
       </div>
-    
   )}

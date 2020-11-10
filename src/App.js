@@ -1,5 +1,4 @@
 import React from 'react';
-import logo from './logo.svg';
 import { Clock } from './features/counter/Clock';
 import './App.css';
 
