@@ -150,6 +150,7 @@ function timeFormatter(timeInSeconds) {
 // code can then be executed and other actions can be dispatched
 
 // Make timer run at regular interval (1 second)
+// This is currently set to 100ms so that testing doesn't take all day.
 export const countdown = () => dispatch => {
     setInterval(() => {
       dispatch(runTimer()); 
