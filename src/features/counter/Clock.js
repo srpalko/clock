@@ -66,25 +66,20 @@ export function Clock() {
       dispatch(setStart());
       dispatch(countdown());
     }
-    // play alarm on cue.
-   /* if ( alarmStatus === 'play' ) {
-      audio.play();
-    } */
-    // stop and reset alarm on cue.
-    /*if (alarmStatus === 'stop') {
-      audio.pause();
-      audio.currentTime = alarmPosition;
-    }*/
-  }, [started]);
+  });
 
   useEffect(() => {
+    // control the audio element based on current state. 
+    // 'pause' is experimental and not exactly what is intended.
     if (alarmStatus === 'play') {
       audio.play();
     } else if (alarmStatus === 'stop') {
       audio.pause();
       audio.currentTime = alarmPosition;
+    } else if (alarmStatus === 'pause') {
+      audio.pause();
     }
-  }, [alarmStatus])
+  })
 
   return (
     <div>
@@ -135,7 +130,7 @@ export function Clock() {
           </button>
         </div>
       </div>
-        {/* Start Button */}
+        {/* Start/Stop Button.*/}
         <button
           id="start_stop"
           className={styles.button}
@@ -165,11 +160,14 @@ export function Clock() {
           >
           Reset
         </button>
-        {/* Display for current interval and time remaining */}
+
+       {/* Display for current interval and time remaining */}
        <div id="timer-label" className={styles.value}>{currentIntervalDisplay}</div>
        <div className={styles.display} id="time-left" >{timerDisplay}</div>
-       {/* provide and audio element for the alarm */}
+
+       {/* provide and audio element for the alarm. Controls are shown for testing */}
        <audio id="beep" src={alarm} type='audio/mpeg; codecs="mp3"' controls/>
+
        {/* FCC Test Suite */}
        <ReactFCCtest />
       </div>

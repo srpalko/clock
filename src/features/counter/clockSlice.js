@@ -23,6 +23,7 @@ export const clockSlice = createSlice({
   },
   reducers: {
     // increment and decrement the session and break timers.
+    // limit settings between 0 and 60, and don't allow changes while timer is running.
     incrementSession: state => {
       if (state.sessionLength < 60 && state.reset) {
         state.sessionLength += 1;
@@ -73,29 +74,30 @@ export const clockSlice = createSlice({
     // starts timer after an interval has ended
     startNextInterval: state => {
       state.running = true; 
-      state.alarmStatus = 'stop';
+      state.alarmStatus = 'pause'; // this is normally 'stop'.
       state.alarmPlaying = false;
     },
-    // called by countdown() at set intervals to run the clock
+    // called by countdown() at set intervals to run the clock. 
+    // when timer reaches 0, start alarm and change interval.
     runTimer: state => {
       if (state.running === true && state.reset === false) {
         if (state.currentInterval === 'session') {
           state.timer -= 1;
           state.display = timeFormatter(state.timer);
           if (state.timer === 0) {
-            state.running = false;
             state.alarmStatus = 'play';
             state.alarmPlaying = true;
             state.currentInterval = 'break';
+            state.running = false;
           }
         } else if (state.currentInterval === 'break') {
             state.timer -= 1;
             state.display = timeFormatter(state.timer);
             if (state.timer === 0) {
-              state.running = false;
               state.alarmStatus = 'play';
               state.alarmPlaying = true;
               state.currentInterval = 'session';
+              state.running = false;
             }
         }
       }
@@ -161,7 +163,7 @@ export const setUpNextInterval = () => dispatch => {
   }, 500);
   setTimeout(() => {
     dispatch(startNextInterval());
-  }, 3000);
+  }, 5000);
 }
 
 // The function below is called a selector and allows us to select a value from
