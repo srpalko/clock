@@ -18,9 +18,9 @@
 
 .value {
   font-size: 78px;
-  padding-left: 16px;
-  padding-right: 16px;
-  margin-top: 2px;
+  padding-left: 30px;
+  padding-right: 30px;
+  margin: 20px;
   font-family: 'Franklin Gothic Medium', 'Arial Narrow', Arial, sans-serif;
 }
 
@@ -28,16 +28,17 @@
   appearance: none;
   background: none;
   font-size: 32px;
-  padding-left: 12px;
-  padding-right: 12px;
-  margin-left: 10px;;
+  padding-left: 20px;
+  padding-right: 20px;
+  margin-left: 10px;
+  margin-bottom: 10px;
   outline: none;
-  border: 2px solid transparent;
+  border: 4px solid transparent;
   color: rgb(80, 101, 172);
   padding-bottom: 4px;
   cursor: pointer;
   background-color: rgba(32, 74, 209, 0.1);
-  border-radius: 2px;
+  border-radius: 40px;
   transition: all 0.15s;
 }
 

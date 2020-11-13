@@ -80,24 +80,18 @@ export function Clock() {
       audio.currentTime = alarmPosition;
     }
   })
-
+  
   return (
     <div>
       {/* Page Title */}
       <h1 className={styles.heading} >SRP 25 + 5 Clock</h1>
+    {/* Display for current interval and time remaining */}
+    <div id="timer-label" className={styles.value}>{currentIntervalDisplay}</div>
+    <div className={styles.display} id="time-left" >{timerDisplay}</div>
       {/* controls for adjusting interval times */}
-      <div id="session-controls" className={styles.row}>
+      <div id="session-controls" className={styles.row.textbox}>
         <h2 id="session-label">Session Length</h2>
         <div className={styles.controls}>
-          <button
-            id="session-increment"
-            className={styles.button}
-            aria-label="Increment session"
-            onClick={() => dispatch(incrementSession())}
-          >
-            +
-          </button>
-          <span className={styles.value} id="session-length">{sessionL}</span>
           <button
             id="session-decrement"
             className={styles.button}
@@ -106,20 +100,20 @@ export function Clock() {
           >
             -
           </button>
-        </div>
-      </div>
-      <div id="break-controls" className={styles.row}>
-        <h2 id="break-label">Break Length</h2>
-        <div className={styles.controls}>
+          <span className={styles.value} id="session-length">{sessionL}</span>
           <button
-            id="break-increment"
+            id="session-increment"
             className={styles.button}
-            aria-label="Increment break"
-            onClick={() => dispatch(incrementBreak())}
+            aria-label="Increment session"
+            onClick={() => dispatch(incrementSession())}
           >
             +
           </button>
-          <span className={styles.value} id="break-length">{breakL}</span>
+        </div>
+      </div>
+      <div id="break-controls" className={styles.row.textbox}>
+        <h2 id="break-label">Break Length</h2>
+        <div className={styles.controls}>
           <button
             id="break-decrement"
             className={styles.button}
@@ -127,6 +121,15 @@ export function Clock() {
             onClick={() => dispatch(decrementBreak())}
           >
             -
+          </button>
+          <span className={styles.value} id="break-length">{breakL}</span>
+          <button
+            id="break-increment"
+            className={styles.button}
+            aria-label="Increment break"
+            onClick={() => dispatch(incrementBreak())}
+          >
+            +
           </button>
         </div>
       </div>
@@ -159,12 +162,9 @@ export function Clock() {
           Reset
         </button>
 
-       {/* Display for current interval and time remaining */}
-       <div id="timer-label" className={styles.value}>{currentIntervalDisplay}</div>
-       <div className={styles.display} id="time-left" >{timerDisplay}</div>
 
        {/* provide and audio element for the alarm. Controls are shown for testing */}
-       <audio id="beep" src={alarm} type='audio/mpeg; codecs="mp3"' controls/>
+       <audio id="beep" src={alarm} type='audio/mpeg; codecs="mp3"'/>
 
        {/* FCC Test Suite */}
        <ReactFCCtest />
