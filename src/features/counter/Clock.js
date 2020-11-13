@@ -1,6 +1,6 @@
 /* A component for the clock feature */
 
-import React, { useState, useEffect } from 'react';
+import React, { useEffect } from 'react';
 // add testing functionality for project
 import ReactFCCtest from 'react-fcctest';
 import { useSelector, useDispatch } from 'react-redux';
@@ -25,8 +25,6 @@ import {
   stopTimer,
   restart,
   nextStart,
-  setNextInterval,
-  //selectTimer,
   setStart,
 } from './clockSlice';
 import styles from './Counter.module.css';

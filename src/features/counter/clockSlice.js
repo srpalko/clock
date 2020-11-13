@@ -1,6 +1,5 @@
 /* This is the slice of the store dealing with the state for the clock functionality. In this case it is the only slice for the app. */
 import { createSlice } from '@reduxjs/toolkit';
-import { useSelector } from 'react-redux';
 
 // provide a convenient way of setting defaults
 const defaultTimes = { session: 25, break: 5 };
