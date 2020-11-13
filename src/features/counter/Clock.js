@@ -76,8 +76,8 @@ export function Clock() {
     } else if (alarmStatus === 'stop') {
       audio.pause();
       audio.currentTime = alarmPosition;
-    } else if (alarmStatus === 'pause') {
-      audio.pause();
+    } else if (alarmStatus === 'reset') {
+      audio.currentTime = alarmPosition;
     }
   })
 
@@ -150,13 +150,11 @@ export function Clock() {
         <button
           id="reset"
           className={styles.button}
-          onClick={() => { if ( isReset && !running ) {
+          onClick={() => { 
             audio.pause();
             audio.currentTime = 0;
             dispatch(reset());
-          } else {
-            dispatch(reset());
-          }}}
+          }}
           >
           Reset
         </button>

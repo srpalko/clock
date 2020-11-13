@@ -48,7 +48,6 @@ export const clockSlice = createSlice({
     },
     // reset to default state
     reset: state => {
-      state.alarmPosition = 0;
       state.alarmStatus = 'stop';
       state.alarmPlaying = false;
       state.running = false;
@@ -74,7 +73,7 @@ export const clockSlice = createSlice({
     // starts timer after an interval has ended
     startNextInterval: state => {
       state.running = true; 
-      state.alarmStatus = 'pause'; // this is normally 'stop'.
+      state.alarmStatus = 'reset'; // this is normally 'stop'.
       state.alarmPlaying = false;
     },
     // called by countdown() at set intervals to run the clock. 
@@ -164,7 +163,7 @@ export const setUpNextInterval = () => dispatch => {
   }, 500);
   setTimeout(() => {
     dispatch(startNextInterval());
-  }, 5000);
+  }, 6000);
 }
 
 // The function below is called a selector and allows us to select a value from
