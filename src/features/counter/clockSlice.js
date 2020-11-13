@@ -152,7 +152,7 @@ function timeFormatter(timeInSeconds) {
 export const countdown = () => dispatch => {
     setInterval(() => {
       dispatch(runTimer()); 
-    }, 100);
+    }, 1000);
 };
 
 // Delay and then set up and start the next interval
