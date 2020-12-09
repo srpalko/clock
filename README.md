@@ -1,3 +1,29 @@
+# 25 + 5 Clock
+This is a pomodoro timer created using Create React App with the Redux and Redux Toolkit template. 
+You can set the work and break intervals between 1 and 60 minutes. When one interval is complete, and alarm sounds and the next interval is started automatically.
+Start/Stop starts and pauses. Reset initializes the clock to its defaults state.
+I've left the test suite in the code for now. Feel free to run the tests by selecting the appropriate test from the drop down.
+
+## Why I built this
+This my final project for the freeCodeCamp Front End Libraries unit.
+
+## How I built this
+I wanted to do code one of my projects using Redux, although I'm not sure that it would really be warranted for an app like this. I did find that once Redux was set up, it made it quite easy to manage the state of the app and to experiment with ways to implement the desired functionality.
+
+One big issue that I had was the manner in which the setInterval function that runs the timer for the clock is called (inside a thunk). I couldn't quite find a way to use clearInterval in a way that worked, so my solution was to just let the timer run once it started and make the timer ignore it when in a stopped state. Maybe not the best way, but it works for now.
+
+### Small bugs
+
+* It's not particularly great looking (or at least not very fancy). I was mainly concerned with the functionality on the first version, as well as this being my first time using Redux. 
+* The hover behavior of the buttons causes elements on the screen to shift around.
+* I am aware that using setTimeout is not particularly accurate. I will at some point find a better way.
+
+### Future ideas
+
+* A more fully functional clock with a longer break time after a certain number of work intervals.
+* It would be neat to try for an analog clock display.
+
+
 This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app), using the [Redux](https://redux.js.org/) and [Redux Toolkit](https://redux-toolkit.js.org/) template.
 
 ## Available Scripts
