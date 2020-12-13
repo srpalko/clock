@@ -27,7 +27,7 @@ export const clockSlice = createSlice({
       if (state.sessionLength < 60 && state.reset) {
         state.sessionLength += 1;
         state.display = timeFormatter(state.sessionLength * 60);
-      }  
+      }
     },
     decrementSession: state => {
       if (state.sessionLength > 1 && state.reset) {
@@ -56,7 +56,7 @@ export const clockSlice = createSlice({
       state.currentInterval = 'session';
       state.timer = defaultTimes.session;
       state.display = timeFormatter(defaultTimes.session * 60);
-      
+
     },
     // extra reducer, not currently in use
     startTimer: state => {
@@ -71,7 +71,7 @@ export const clockSlice = createSlice({
     },
     // starts timer after an interval has ended
     startNextInterval: state => {
-      state.running = true; 
+      state.running = true;
       state.alarmStatus = 'reset'; // this is normally 'stop'.
       state.alarmPlaying = false;
     },
@@ -89,14 +89,14 @@ export const clockSlice = createSlice({
             state.running = false;
           }
         } else if (state.currentInterval === 'break') {
-            state.timer -= 1;
-            state.display = timeFormatter(state.timer);
-            if (state.timer === 0) {
-              state.alarmStatus = 'play';
-              state.alarmPlaying = true;
-              state.currentInterval = 'session';
-              state.running = false;
-            }
+          state.timer -= 1;
+          state.display = timeFormatter(state.timer);
+          if (state.timer === 0) {
+            state.alarmStatus = 'play';
+            state.alarmPlaying = true;
+            state.currentInterval = 'session';
+            state.running = false;
+          }
         }
       }
     },
@@ -105,13 +105,13 @@ export const clockSlice = createSlice({
     },
     // set up the next interval
     setNextInterval: state => {
-        if (state.currentInterval === 'break') {
-          state.timer = state.breakLength * 60;
-          state.display = timeFormatter(state.timer);
-        } else if (state.currentInterval === 'session') {
-          state.timer = state.sessionLength * 60;
-          state.display = timeFormatter(state.timer);
-        }
+      if (state.currentInterval === 'break') {
+        state.timer = state.breakLength * 60;
+        state.display = timeFormatter(state.timer);
+      } else if (state.currentInterval === 'session') {
+        state.timer = state.sessionLength * 60;
+        state.display = timeFormatter(state.timer);
+      }
     },
     // indicate that countdown is running
     setStart: state => {
@@ -124,9 +124,9 @@ export const clockSlice = createSlice({
   }
 });
 
-export const { incrementSession, decrementSession, incrementBreak, 
-              decrementBreak, reset, runTimer, startTimer, stopTimer,
-               startNextInterval, playAlarm, setNextInterval, nextStart, setStart, restart } = clockSlice.actions;
+export const { incrementSession, decrementSession, incrementBreak,
+  decrementBreak, reset, runTimer, startTimer, stopTimer,
+  startNextInterval, playAlarm, setNextInterval, nextStart, setStart, restart } = clockSlice.actions;
 
 
 // Takes seconds as integer and returns '00:00' display as string
@@ -150,9 +150,9 @@ function timeFormatter(timeInSeconds) {
 // Make timer run at regular interval (1 second)
 // This is currently set to 100ms so that testing doesn't take all day.
 export const countdown = () => dispatch => {
-    setInterval(() => {
-      dispatch(runTimer()); 
-    }, 1000);
+  setInterval(() => {
+    dispatch(runTimer());
+  }, 1000);
 };
 
 // Delay and then set up and start the next interval

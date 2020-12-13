@@ -68,7 +68,6 @@ export function Clock() {
 
   useEffect(() => {
     // control the audio element based on current state. 
-    // 'pause' is experimental and not exactly what is intended.
     if (alarmStatus === 'play') {
       audio.play();
     } else if (alarmStatus === 'stop') {
@@ -78,14 +77,14 @@ export function Clock() {
       audio.currentTime = alarmPosition;
     }
   })
-  
+
   return (
-    <div>
+    <div className={styles.clock}>
       {/* Page Title */}
-      <h1 className={styles.heading} >SRP 25 + 5 Clock</h1>
-    {/* Display for current interval and time remaining */}
-    <div id="timer-label" className={styles.value}>{currentIntervalDisplay}</div>
-    <div className={styles.display} id="time-left" >{timerDisplay}</div>
+      <h1 className={styles.heading} >Productivity Clock</h1>
+      {/* Display for current interval and time remaining */}
+      <div id="timer-label" className={styles.value}>Current Interval: {currentIntervalDisplay}</div>
+      <div className={styles.display} id="time-left" >{timerDisplay}</div>
       {/* controls for adjusting interval times */}
       <div id="session-controls" className={styles.row.textbox}>
         <h2 id="session-label">Session Length</h2>
@@ -131,40 +130,43 @@ export function Clock() {
           </button>
         </div>
       </div>
-        {/* Start/Stop Button.*/}
-        <button
-          id="start_stop"
-          className={styles.button}
-          onClick={() => { if (isReset && !running) { 
-                            dispatch(nextStart()); 
-                          } 
-                          else if (running) {
-                            dispatch(stopTimer())
-                          }
-                          else if (!running && !alarmPlaying) { 
-                            dispatch(restart()) 
-                          } }}
-        >
-          Start/Stop
+      {/* Start/Stop Button.*/}
+      <button
+        id="start_stop"
+        className={styles.button}
+        onClick={() => {
+          if (isReset && !running) {
+            dispatch(nextStart());
+          }
+          else if (running) {
+            dispatch(stopTimer())
+          }
+          else if (!running && !alarmPlaying) {
+            dispatch(restart())
+          }
+        }}
+      >
+        Start/Stop
         </button>
-        {/* Reset Button */}
-        <button
-          id="reset"
-          className={styles.button}
-          onClick={() => { 
-            audio.pause();
-            audio.currentTime = 0;
-            dispatch(reset());
-          }}
-          >
-          Reset
+      {/* Reset Button */}
+      <button
+        id="reset"
+        className={styles.button}
+        onClick={() => {
+          audio.pause();
+          audio.currentTime = 0;
+          dispatch(reset());
+        }}
+      >
+        Reset
         </button>
 
 
-       {/* provide and audio element for the alarm. Controls are shown for testing */}
-       <audio id="beep" src={alarm} type='audio/mpeg; codecs="mp3"'/>
+      {/* provide and audio element for the alarm. */}
+      <audio id="beep" src={alarm} type='audio/mpeg; codecs="mp3"' />
 
-       {/* FCC Test Suite */}
-       <ReactFCCtest />
-      </div>
-  )}
+      {/* FCC Test Suite */}
+      <ReactFCCtest />
+    </div>
+  )
+}
