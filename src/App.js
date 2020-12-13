@@ -1,6 +1,7 @@
 import React from 'react';
 import { Clock } from './features/counter/Clock';
 import './App.css';
+import 'bootstrap/dist/css/bootstrap.min.css';
 
 function App() {
   return (

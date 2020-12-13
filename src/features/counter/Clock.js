@@ -4,6 +4,7 @@ import React, { useEffect } from 'react';
 // add testing functionality for project
 import ReactFCCtest from 'react-fcctest';
 import { useSelector, useDispatch } from 'react-redux';
+import Jumbotron from 'react-bootstrap/Jumbotron';
 import {
   incrementSession,
   decrementSession,
@@ -79,28 +80,32 @@ export function Clock() {
   })
 
   return (
-    <div className={styles.clock}>
+    <div className="container-fluid">
       {/* Page Title */}
-      <h1 className={styles.heading} >Productivity Clock</h1>
+      <h1 className="display-1">Productivity Clock</h1>
       {/* Display for current interval and time remaining */}
-      <div id="timer-label" className={styles.value}>Current Interval: {currentIntervalDisplay}</div>
-      <div className={styles.display} id="time-left" >{timerDisplay}</div>
+      <div className="row">
+        <div className="col">
+      <div id="timer-label" className="display-4">Current Interval: {currentIntervalDisplay}</div>
+      <div id="time-left" className="display-1">{timerDisplay}</div>
+      </div>
+      <div className="col">
       {/* controls for adjusting interval times */}
-      <div id="session-controls" className={styles.row.textbox}>
-        <h2 id="session-label">Session Length</h2>
-        <div className={styles.controls}>
+      <div id="session-controls" >
+        <h2 id="session-label" className="display-3">Session Length</h2>
+        <div >
           <button
             id="session-decrement"
-            className={styles.button}
+            className="btn btn-secondary"
             aria-label="Decrement session"
             onClick={() => dispatch(decrementSession())}
           >
             -
           </button>
-          <span className={styles.value} id="session-length">{sessionL}</span>
+          <span id="session-length" className="display-1">{sessionL}</span>
           <button
+          className="btn btn-secondary"
             id="session-increment"
-            className={styles.button}
             aria-label="Increment session"
             onClick={() => dispatch(incrementSession())}
           >
@@ -108,21 +113,21 @@ export function Clock() {
           </button>
         </div>
       </div>
-      <div id="break-controls" className={styles.row.textbox}>
-        <h2 id="break-label">Break Length</h2>
-        <div className={styles.controls}>
+      <div id="break-controls">
+        <h2 id="break-label" className="display-3">Break Length</h2>
+        <div >
           <button
             id="break-decrement"
-            className={styles.button}
+            className="btn btn-secondary"
             aria-label="Decrement break"
             onClick={() => dispatch(decrementBreak())}
           >
             -
           </button>
-          <span className={styles.value} id="break-length">{breakL}</span>
+          <span  id="break-length" className="display-1">{breakL}</span>
           <button
             id="break-increment"
-            className={styles.button}
+            className="btn btn-secondary"
             aria-label="Increment break"
             onClick={() => dispatch(incrementBreak())}
           >
@@ -131,9 +136,10 @@ export function Clock() {
         </div>
       </div>
       {/* Start/Stop Button.*/}
+      <div className="btn-group">
       <button
         id="start_stop"
-        className={styles.button}
+        className="btn btn-primary"
         onClick={() => {
           if (isReset && !running) {
             dispatch(nextStart());
@@ -151,7 +157,7 @@ export function Clock() {
       {/* Reset Button */}
       <button
         id="reset"
-        className={styles.button}
+        className="btn btn-primary active"
         onClick={() => {
           audio.pause();
           audio.currentTime = 0;
@@ -160,6 +166,9 @@ export function Clock() {
       >
         Reset
         </button>
+        </div>
+        </div>
+        </div>
 
 
       {/* provide and audio element for the alarm. */}
@@ -167,6 +176,7 @@ export function Clock() {
 
       {/* FCC Test Suite */}
       <ReactFCCtest />
+   
     </div>
   )
 }
