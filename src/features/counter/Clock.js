@@ -85,98 +85,100 @@ export function Clock() {
       <h1 className="display-1">Productivity Clock</h1>
       {/* Display for current interval and time remaining */}
       <div className="row">
+        <div className="col-4">
+          <div id="timer-label" className="display-4">Current Interval: {currentIntervalDisplay}</div>
+          <div id="time-left" className="display-1 border border-info border-5 rounded-pill">{timerDisplay}</div>
+        </div>
         <div className="col">
-      <div id="timer-label" className="display-4">Current Interval: {currentIntervalDisplay}</div>
-      <div id="time-left" className="display-1">{timerDisplay}</div>
-      </div>
-      <div className="col">
-      {/* controls for adjusting interval times */}
-      <div id="session-controls" >
-        <h2 id="session-label" className="display-3">Session Length</h2>
-        <div >
-          <button
-            id="session-decrement"
-            className="btn btn-secondary"
-            aria-label="Decrement session"
-            onClick={() => dispatch(decrementSession())}
-          >
-            -
+          {/* controls for adjusting interval times */}
+          <div id="session-controls" >
+            <h2 id="session-label" className="display-3">Session Length</h2>
+            <div >
+              <button
+                id="session-decrement"
+                className="btn btn-secondary"
+                aria-label="Decrement session"
+                onClick={() => dispatch(decrementSession())}
+              >
+                -
           </button>
-          <span id="session-length" className="display-1">{sessionL}</span>
-          <button
-          className="btn btn-secondary"
-            id="session-increment"
-            aria-label="Increment session"
-            onClick={() => dispatch(incrementSession())}
-          >
-            +
+              <span id="session-length" className="display-1">{sessionL}</span>
+              <button
+                className="btn btn-secondary"
+                id="session-increment"
+                aria-label="Increment session"
+                onClick={() => dispatch(incrementSession())}
+              >
+                +
           </button>
-        </div>
-      </div>
-      <div id="break-controls">
-        <h2 id="break-label" className="display-3">Break Length</h2>
-        <div >
-          <button
-            id="break-decrement"
-            className="btn btn-secondary"
-            aria-label="Decrement break"
-            onClick={() => dispatch(decrementBreak())}
-          >
-            -
+            </div>
+          </div>
+          <div id="break-controls">
+            <h2 id="break-label" className="display-3">Break Length</h2>
+            <div >
+              <button
+                id="break-decrement"
+                className="btn btn-secondary"
+                aria-label="Decrement break"
+                onClick={() => dispatch(decrementBreak())}
+              >
+                -
           </button>
-          <span  id="break-length" className="display-1">{breakL}</span>
-          <button
-            id="break-increment"
-            className="btn btn-secondary"
-            aria-label="Increment break"
-            onClick={() => dispatch(incrementBreak())}
-          >
-            +
+              <span id="break-length" className="display-1">{breakL}</span>
+              <button
+                id="break-increment"
+                className="btn btn-secondary"
+                aria-label="Increment break"
+                onClick={() => dispatch(incrementBreak())}
+              >
+                +
           </button>
-        </div>
-      </div>
-      {/* Start/Stop Button.*/}
-      <div className="btn-group">
-      <button
-        id="start_stop"
-        className="btn btn-primary"
-        onClick={() => {
-          if (isReset && !running) {
-            dispatch(nextStart());
-          }
-          else if (running) {
-            dispatch(stopTimer())
-          }
-          else if (!running && !alarmPlaying) {
-            dispatch(restart())
-          }
-        }}
-      >
-        Start/Stop
+            </div>
+          </div>
+          {/* Start/Stop Button.*/}
+          <div className="btn-group">
+            <button
+              id="start_stop"
+              className="btn btn-primary btn-lg"
+              data-bs-toggle="button"
+              autocomplete="off"
+              onClick={() => {
+                if (isReset && !running) {
+                  dispatch(nextStart());
+                }
+                else if (running) {
+                  dispatch(stopTimer())
+                }
+                else if (!running && !alarmPlaying) {
+                  dispatch(restart())
+                }
+              }}
+            >
+              Start/Stop
         </button>
-      {/* Reset Button */}
-      <button
-        id="reset"
-        className="btn btn-primary active"
-        onClick={() => {
-          audio.pause();
-          audio.currentTime = 0;
-          dispatch(reset());
-        }}
-      >
-        Reset
+            {/* Reset Button */}
+            <button
+              id="reset"
+              className="btn btn-primary btn-lg"
+              onClick={() => {
+                audio.pause();
+                audio.currentTime = 0;
+                dispatch(reset());
+              }}
+            >
+              Reset
         </button>
+          </div>
         </div>
-        </div>
-        </div>
+      </div>
 
 
       {/* provide and audio element for the alarm. */}
       <audio id="beep" src={alarm} type='audio/mpeg; codecs="mp3"' />
 
       {/* FCC Test Suite */}
-      <ReactFCCtest />
-   
+      {/*<ReactFCCtest />*/}
+
     </div>
   )
 }
